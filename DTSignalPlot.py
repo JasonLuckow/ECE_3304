@@ -20,9 +20,12 @@ class DTSignalPlot:
         self.coefficient = coefficient
         self.frequency = frequency
         self.samples = samples
-        self.signal = []
+        self.signals = []
         for coefficients, frequencies in zip(self.coefficient, self.frequency):
-            self.signal.append(coefficients * np.cos(frequencies * self.samples))
+            # zip takes the lists from the user and pairs data from each list
+            # to  return an iterator
+            self.signals.append(coefficients * np.cos(frequencies * self.samples))
+            # initializes the list that will hold the signals
 
     def getplot(self):
         """
@@ -32,46 +35,35 @@ class DTSignalPlot:
         # 'o' adds dot to the tips of the plot
         # initializes the list that will hold the functions
         count = 0
-        # for coefficients, frequencies in zip(self.coefficient, self.frequency):
-        #     # zip takes the lists from the user and pairs data from each list
-        #     # to  return an iterator
-        #     label = '{} * cos({} * pi * n)'.format(coefficients, Fraction(frequencies/np.pi))
-        #     # creates label for legend
-        #     x.append(coefficients * np.cos(frequencies * self.samples))
-        #     # stores unit sample signal to be plotted
-        #     plt.stem(self.samples, x[count], colors[count], label=label, basefmt=" ", markerfmt=colors[count])
-        #     # plots the stored unit sample signal. basefmt and markerfmt is used to configure legend
-        #     count += 1
-        for signals in self.signal:
+        fig, plot = plt.subplots(len(self.signals))
+        fig.suptitle('Plotted Signals')
+        for signal in self.signals:
             label = '{} * cos({} * pi * n)'.format(self.coefficient[count], Fraction(self.frequency[count] / np.pi))
-            plt.stem(self.samples, signals, colors[count], label=label, basefmt=" ", markerfmt=colors[count])
+            plot[count].stem(self.samples, signal, colors[count], label=label, basefmt=" ", markerfmt=colors[count])
+            plot[count].grid()
+            plot[count].legend(loc="upper right")
+            plot[count].axhline(y=0, color='r')
+            # adds horizontal line to the x axis
+            plot[count].set_xticks(self.samples)
+            plot[count].set_xlabel('n')
+            plot[count].set_ylabel('x[n]')
             count += 1
-
-        plt.xlabel('n')
-        plt.ylabel('x[n]')
-        plt.title('Plot of DT signals')
-        plt.axhline(y=0, color='r')
-        # adds horizontal line to the x axis
-        plt.legend()
-        plt.xticks(self.samples)
-        plt.grid()
         plt.show()
 
 
     def getperiod(self):
         """
-        Converts the frequency w0 to fraction form and returns the period N
-        of the discrete-time signal
+        Converts the frequency w0 to fraction form, stripes pi from the input and returns the period N
+        of the discrete-time signal in a list
         """
-        w0fraction = Fraction(self.frequency)
-        periodN = w0fraction.denominator * 2
+        periodN = []
+        for freq in self.frequency:
+            w0fraction = Fraction(freq / np.pi)
+            periodN.append(w0fraction.denominator * 2)
         return periodN
 
 
-#newplot = DTSignalPlot(4, 3/4 * np.pi, np.arange(start=-5, stop=6))
-#newplot.getplot()
-#newplot.getperiod()
-
-newplot = DTSignalPlot([1, 1, 1, 1], [0, np.pi / 8, np.pi / 4, np.pi], np.arange(start=-10, stop=11))
+newplot = DTSignalPlot([1, 1, 1, 1], [0, np.pi / 8, np.pi / 4, np.pi], np.arange(start=-15, stop=16))
 newplot.getplot()
+print(newplot.getperiod())
 
