@@ -1,16 +1,3 @@
-"""
-Author: Jason Luckow
-Date: 9/2/2020
-Description: Outputs a stem chart of a list of discrete-time signals
-"""
-
-import numpy as np
-import matplotlib.pyplot as plt
-from fractions import Fraction
-import random
-from matplotlib.ticker import AutoMinorLocator
-
-
 class DTSignalPlot:
     """
     Optional args:
